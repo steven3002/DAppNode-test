@@ -1,0 +1,4 @@
+#!/bin/bash
+# Emulation stub: configure_keyper.sh probes the Ethereum RPC with wscat. Nothing is contacted here
+# (the container has no network); this prints a reply that contains '"id":1' so the probe passes.
+echo '{"jsonrpc":"2.0","id":1,"result":false}'

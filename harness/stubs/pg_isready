@@ -1,0 +1,4 @@
+#!/bin/bash
+# Emulation stub: there is no database in this offline emulation. The real script waits for postgres here.
+echo "[stub] pg_isready $*: no database in this emulation, reporting ready"
+exit 0

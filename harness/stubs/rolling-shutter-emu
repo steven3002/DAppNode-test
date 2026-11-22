@@ -1,0 +1,8 @@
+#!/bin/bash
+# Emulation wrapper for SHUTTER_BIN: runs the real /rolling-shutter (v1.4.4) for every subcommand except
+# "shutterservicekeyper initdb", which needs the postgres database that this offline emulation does not have.
+if [ "${1:-}" = "shutterservicekeyper" ] && [ "${2:-}" = "initdb" ]; then
+    echo "[stub] rolling-shutter $*: skipped, no database in this emulation"
+    exit 0
+fi
+exec /rolling-shutter "$@"

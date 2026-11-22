@@ -1,0 +1,5 @@
+#!/bin/bash
+# Emulation stub: records which programs configure.sh asks supervisord to start. The chain and the keyper
+# are never run in this emulation.
+echo "[stub] supervisorctl $*"
+echo "$*" >> /tmp/supervisorctl.calls
