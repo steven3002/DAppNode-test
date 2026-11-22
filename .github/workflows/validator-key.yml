@@ -1,0 +1,59 @@
+name: validator key test
+
+# Runs run-all.sh against the Shutter API Dappnode package: the base commit, the fix, the four deliberate
+# breaks of the fix, and the upgrade from the base to the fix. It runs the same scripts as README.md's local
+# run.
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      fix_repository:
+        description: Repository that holds the fixed package
+        default: steven3002/DAppnodePackage-shutter-api
+      fix_ref:
+        description: Branch, tag or commit of the fixed package
+        default: fix/validator-key-restore
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Check out this repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: test
+          persist-credentials: false
+
+      - name: Check out the package at the base commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: shutter-network/DAppnodePackage-shutter-api
+          ref: a3b4b1895c993493e12989b3af3a5767bbd71a15
+          path: base
+          persist-credentials: false
+
+      - name: Check out the fixed package
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ inputs.fix_repository || 'steven3002/DAppnodePackage-shutter-api' }}
+          ref: ${{ inputs.fix_ref || 'fix/validator-key-restore' }}
+          path: fix
+          persist-credentials: false
+
+      - name: Show the commits under test
+        run: |
+          echo "base: $(git -C base rev-parse HEAD)"
+          echo "fix:  $(git -C fix rev-parse HEAD)"
+
+      - name: Download the Go modules of go_shutter_settings from GitHub
+        run: |
+          bash test/tools/prepare.sh modules base gomod
+          bash test/tools/prepare.sh modules fix gomod
+
+      - name: Run the test
+        run: WORK="$RUNNER_TEMP/work" bash test/run-all.sh base fix gomod
